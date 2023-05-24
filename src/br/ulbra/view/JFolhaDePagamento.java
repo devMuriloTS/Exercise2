@@ -55,7 +55,6 @@ public class JFolhaDePagamento extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
         lbFuncionario = new javax.swing.JLabel();
         lbSalarioLiquido = new javax.swing.JLabel();
         lbSalarioBruto = new javax.swing.JLabel();
@@ -120,6 +119,11 @@ public class JFolhaDePagamento extends javax.swing.JFrame {
         jPanel1.add(txtQuantFilhos, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 210, -1));
 
         btLimpar.setText("Limpar");
+        btLimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btLimparActionPerformed(evt);
+            }
+        });
         jPanel1.add(btLimpar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 270, 100, -1));
 
         btGerar.setText("Gerar Folha");
@@ -177,12 +181,8 @@ public class JFolhaDePagamento extends javax.swing.JFrame {
         jPanel2.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
         jLabel19.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
-        jLabel19.setText("Mês /");
+        jLabel19.setText("Maio / 2023");
         jPanel2.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, -1, -1));
-
-        jLabel20.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
-        jLabel20.setText("Ano");
-        jPanel2.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 10, -1, -1));
 
         lbFuncionario.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
         lbFuncionario.setText("?");
@@ -245,7 +245,8 @@ public class JFolhaDePagamento extends javax.swing.JFrame {
     }//GEN-LAST:event_txtQuantFilhosActionPerformed
 
     private void btGerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btGerarActionPerformed
-        double salBruto, salHorasExtras, horas, valorH, quantHE, descInss;
+        double salBruto, salHorasExtras, salFam, horas, valorH, quantHE, descInss, descIR, salLiq;
+        int filhos;
         lbFuncionario.setText(txtFuncionario.getText());
         lbHoras.setText(txtHoras.getText());
         lbQuantHorasExtras.setText(txtQuantHExtras.getText());
@@ -254,14 +255,61 @@ public class JFolhaDePagamento extends javax.swing.JFrame {
         quantHE = Double.parseDouble(txtQuantHExtras.getText());
         salBruto = horas*valorH;
         salHorasExtras = quantHE*valorH*1.5;
+        filhos = Integer.parseInt(txtQuantFilhos.getText());
+        salFam = filhos*15;
         lbSalarioBruto.setText(String.valueOf(salBruto));
         lbValorHoraExtra.setText(String.valueOf(salHorasExtras));
         if (salBruto <= 1320.00){
-            descInss = salBruto*(1-7.5/100);
+            descInss = salBruto*0.075;
+            lbDescontoINSS.setText(String.valueOf(descInss));
+        }else if(salBruto >1320 && salBruto <= 2571.29){
+            descInss = salBruto*0.09;
+            lbDescontoINSS.setText(String.valueOf(descInss));
+        }else if(salBruto > 2571.29 && salBruto < 3856.94){
+            descInss = salBruto*0.12;
+            lbDescontoINSS.setText(String.valueOf(descInss));
+        }else{
+            descInss = salBruto*0.14;
             lbDescontoINSS.setText(String.valueOf(descInss));
         }
-        
+        // Desconto IR
+        if (salBruto < 1903.09){
+            descIR = 0;
+            lbDescontoIR.setText(String.valueOf(descIR));
+        }else if(salBruto >= 1903.09 && salBruto <= 2826.65){
+            descIR = salBruto*0.075;
+            lbDescontoIR.setText(String.valueOf(descIR));
+        }else if(salBruto > 2826.65 && salBruto <= 3751.05){
+            descIR = salBruto*0.15;
+            lbDescontoIR.setText(String.valueOf(descIR));
+        }else if(salBruto > 3751.05 && salBruto <= 4664.68){
+            descIR = salBruto*0.225;
+            lbDescontoIR.setText(String.valueOf(descIR));
+        }else{
+            descIR = salBruto*0.275;
+            lbDescontoIR.setText(String.valueOf(descIR));
+        }
+        salLiq = salBruto+salFam+salHorasExtras-descInss-descIR;
+        lbSalarioLiquido.setText(String.valueOf(salLiq));
+        lbValorSalFamilia.setText(String.valueOf(salFam));
     }//GEN-LAST:event_btGerarActionPerformed
+
+    private void btLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLimparActionPerformed
+        lbSalarioLiquido.setText("?");
+        lbValorSalFamilia.setText("?");
+        lbDescontoIR.setText("?");
+        lbDescontoINSS.setText("?");
+        lbValorHoraExtra.setText("?");
+        lbSalarioBruto.setText("?");
+        lbFuncionario.setText("?");
+        lbHoras.setText("?");
+        lbQuantHorasExtras.setText("?");
+        txtFuncionario.setText(null);
+        txtHoras.setText(null);
+        txtQuantFilhos.setText(null);
+        txtQuantHExtras.setText(null);
+        txtValorHora.setText(null);
+    }//GEN-LAST:event_btLimparActionPerformed
 
     /**
      * @param args the command line arguments
@@ -313,7 +361,6 @@ public class JFolhaDePagamento extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
